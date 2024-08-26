@@ -1,5 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
+import pandas as pd
+
 
 def extract_words_from_links(html_content):
   """Lọc các từ trong thẻ a có thuộc tính target="_blank" từ nội dung HTML.
@@ -16,17 +18,28 @@ def extract_words_from_links(html_content):
   words = [link.text for link in links]
   return words
 
-# Ví dụ sử dụng:
-html_string = """
-<html>
-<body>
-  <a href="http://dictionary.cambridge.org/dictionary/english-russian/ability" target="_blank">ability</a>
-  <a href="http://dictionary.cambridge.org/dictionary/english-russian/abandon" target="_blank">abandon</a>
-  <a href="http://dictionary.cambridge.org/dictionary/english-russian/abbey">abbey</a>  </body>
-</html>
-"""
+def write_data_to_excel():
+  seattle_restaurants = [
+    ['Bakery Nouveau', 'French', 4.6],
+    ['Pizzeria Credo', 'Italian', 4.6],
+    ['Chan Seattle', 'Korean', 4.4],
+    ['Tilikum Place Cafe', 'European', 4.6],
+    ['Ba Bar Capitol Hill', 'Vietnamese', 4.5]
+]
+ 
+seattle_restaurants_df = pd.DataFrame(
+    data=seattle_restaurants,
+    columns=['Restaurant', 'Cuisine', 'Rating']
+)
+
+seattle_restaurants_df.to_excel(
+    'seattle_restaurants.xlsx',
+    # Don't save the auto-generated numeric index
+    index=False
+)
 
 response = requests.get("http://sherwoodschool.ru/vocabulary/proficiency/")
 # print(response.content)
 words = extract_words_from_links(response.content)
+write_data_to_excel()
 print(words)  # Output: ['ability', 'abandon']
