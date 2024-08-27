@@ -25,18 +25,27 @@ def write_data_to_excel():
     ['Chan Seattle', 'Korean', 4.4],
     ['Tilikum Place Cafe', 'European', 4.6],
     ['Ba Bar Capitol Hill', 'Vietnamese', 4.5]
-]
+  ]
  
-seattle_restaurants_df = pd.DataFrame(
-    data=seattle_restaurants,
-    columns=['Restaurant', 'Cuisine', 'Rating']
-)
+  seattle_restaurants_df = pd.DataFrame(
+      data=seattle_restaurants,
+      columns=['Restaurant', 'Cuisine', 'Rating']
+  )
 
-seattle_restaurants_df.to_excel(
-    'seattle_restaurants.xlsx',
-    # Don't save the auto-generated numeric index
-    index=False
-)
+  seattle_restaurants_df.to_excel(
+      'seattle_restaurants.xlsx',
+      # Don't save the auto-generated numeric index
+      index=False
+  )
+
+def getInfomationWord(word):
+  response = requests.get("https://dictionary.cambridge.org/dictionary/english/{word}")
+  soup = BeautifulSoup(response.content, 'html.parser')
+  links = soup.find_all('a', target='_blank')
+  words = [link.text for link in links]
+  return words
+
+
 
 response = requests.get("http://sherwoodschool.ru/vocabulary/proficiency/")
 # print(response.content)
