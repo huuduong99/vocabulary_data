@@ -18,22 +18,16 @@ def extract_words_from_links(html_content):
   words = [link.text for link in links]
   return words
 
-def write_data_to_excel():
-  seattle_restaurants = [
-    ['Bakery Nouveau', 'French', 4.6],
-    ['Pizzeria Credo', 'Italian', 4.6],
-    ['Chan Seattle', 'Korean', 4.4],
-    ['Tilikum Place Cafe', 'European', 4.6],
-    ['Ba Bar Capitol Hill', 'Vietnamese', 4.5]
-  ]
+def write_data_to_excel(words):
+  
  
   seattle_restaurants_df = pd.DataFrame(
-      data=seattle_restaurants,
-      columns=['Restaurant', 'Cuisine', 'Rating']
+      data=words,
+      columns=['word']
   )
 
   seattle_restaurants_df.to_excel(
-      'seattle_restaurants.xlsx',
+      'vocabulary.xlsx',
       # Don't save the auto-generated numeric index
       index=False
   )
@@ -50,5 +44,5 @@ def getInfomationWord(word):
 response = requests.get("http://sherwoodschool.ru/vocabulary/proficiency/")
 # print(response.content)
 words = extract_words_from_links(response.content)
-write_data_to_excel()
+write_data_to_excel(words)
 print(words)  # Output: ['ability', 'abandon']
