@@ -19,21 +19,7 @@ def extract_words_from_links(html_content):
   words = [link.text for link in links]
   return words
 
-def write_data_to_excel(words):
-  
- 
-  seattle_restaurants_df = pd.DataFrame(
-      data=words,
-      columns=['word']
-  )
-
-  seattle_restaurants_df.to_excel(
-      'vocabulary.xlsx',
-      # Don't save the auto-generated numeric index
-      index=False
-  )
-
-def getWordInfomation(word):
+def getWordInfomation(index,word):
   headers = requests.utils.default_headers()
   headers.update(
       {
@@ -62,18 +48,44 @@ def getWordInfomation(word):
   ipa_element = soup.find('span', class_='ipa dipa lpr-2 lpl-1')
   ipa = ipa_element.text if ipa_element else None
 
+  pos_element = soup.find('span', class_='pos dpos')
+  pos = pos_element.text if pos_element else None
+
   level_element = soup.find('span', class_='def-info ddef-info')
   level = level_element.text if level_element else None
 
 
 
-  return [ipa,level]
+  return [index,word,ipa,pos,level]
+
+
+def write_data_to_excel(words):
+
+  wordsWithInfomation =[]
+
+  for index, item in enumerate(words):
+      
+    word = getWordInfomation(index,item)
+    print(word)
+    wordsWithInfomation.append(word)
+
+ 
+  vocabulary_df = pd.DataFrame(
+      data=wordsWithInfomation,
+      columns=['index','word','ipa','pos','level']
+  )
+
+  vocabulary_df.to_excel(
+      'vocabulary.xlsx',
+      # Don't save the auto-generated numeric index
+      index=False
+  )
 
 
 
-# response = requests.get("http://sherwoodschool.ru/vocabulary/proficiency/a")
-# words = extract_words_from_links(response.content)
+response = requests.get("http://sherwoodschool.ru/vocabulary/intermediate/")
+words = extract_words_from_links(response.content)
 # print(words)  # Output: ['ability', 'abandon']
-# write_data_to_excel(words)
-word = getWordInfomation("alert")
-print(word)
+write_data_to_excel(words)
+# word = getWordInfomation("abandon")
+# print(word)
