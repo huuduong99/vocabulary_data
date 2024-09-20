@@ -37,8 +37,8 @@ def extract_word_data(ur):
         level = level_element.text.strip() if level_element else None
         pronunciation_uk = getSound('us',word)
         pronunciation_us = getSound('uk',word)
-        topic = getTopicname(word)
-        wordInfo = [index,word,pos,level,pronunciation_uk,pronunciation_us,topic]
+        result = getTopicNameAndIPA(word)
+        wordInfo = [index,word,result['ipa'],pos,level,pronunciation_uk,pronunciation_us,result['topic']]
 
         print(wordInfo)
         filtered_data.append(wordInfo)
@@ -67,7 +67,7 @@ def getSound(language,word):
     parsed_data = json.loads(response.text)
     return parsed_data["data"]
 
-def getTopicname(word):
+def getTopicNameAndIPA(word):
 
     url = f"https://www.oxfordlearnersdictionaries.com/definition/english/{word}_1"
     headers = requests.utils.default_headers()
@@ -80,16 +80,19 @@ def getTopicname(word):
     html_content = response.text
     soup = BeautifulSoup(html_content, 'html.parser')
     topic_name_element = soup.find('span', class_='topic_name')
+    ipa_element = soup.find('span', class_='phon')
 
     topic_name = topic_name_element.text.strip()if topic_name_element else None
 
-    return topic_name
+    ipa = ipa_element.text.strip()if ipa_element else None
+
+    return {"topic":topic_name,"ipa":ipa}
 
 def write_data_to_excel(words):
  
   vocabulary_df = pd.DataFrame(
       data=words,
-      columns=['index','word','pos','level','pronunciation_uk','pronunciation_us','topic']
+      columns=['index','word','ipa','pos','level','pronunciation_uk','pronunciation_us','topic']
   )
 
   vocabulary_df.to_excel(
